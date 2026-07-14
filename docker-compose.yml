@@ -1,0 +1,43 @@
+services:
+  api:
+    build: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
+    volumes:
+      - video-data:/app/data
+      - video-media:/app/media
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  worker:
+    build: ./backend
+    command: python -m app.worker
+    environment:
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      VIDEO_RECORDING_FAST_MODE: ${VIDEO_RECORDING_FAST_MODE:-true}
+      VIDEO_RECORDING_TRANSLATION_CONCURRENCY: ${VIDEO_RECORDING_TRANSLATION_CONCURRENCY:-10}
+      VIDEO_RECORDING_TTS_CONCURRENCY: ${VIDEO_RECORDING_TTS_CONCURRENCY:-6}
+      VIDEO_RECORDING_AUDIO_FIT_CONCURRENCY: ${VIDEO_RECORDING_AUDIO_FIT_CONCURRENCY:-6}
+      VIDEO_RECORDING_REWRITE_CONCURRENCY: ${VIDEO_RECORDING_REWRITE_CONCURRENCY:-4}
+    volumes:
+      - video-data:/app/data
+      - video-media:/app/media
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  video-data:
+  video-media:
