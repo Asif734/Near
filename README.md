@@ -13,7 +13,7 @@ This is a self-contained FastAPI and React video translation application. It inc
 
 ## Processing pipeline
 
-The background worker now runs the complete pipeline:
+The background worker now runs the complete pipeline::
 
 1. Extract 16 kHz mono audio with FFmpeg.
 2. Transcribe through Deepgram Nova-3 with word timestamps.
