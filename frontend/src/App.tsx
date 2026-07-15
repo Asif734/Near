@@ -71,7 +71,7 @@ export function App() {
       <nav><div className="brand"><span>◈</span> Dubflow</div><div className="worker-state"><i className={active ? 'pulse' : ''} />{active ? 'Processing' : 'Ready'}</div></nav>
       <header>
         <p className="eyebrow">AI-powered video localization</p>
-        <h1>Your voice,<br /><em>every language.</em></h1>
+        <h1>Your voice, <em>every language.</em></h1>
         <p className="lede">Upload a video or record one here. We prepare it in the background while you keep working.</p>
       </header>
 
