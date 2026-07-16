@@ -63,8 +63,13 @@ def process_video(project: dict, report) -> Path:
         raise PipelineError("FFmpeg and FFprobe are required but were not found")
 
     engine_project = dict(project)
-    if project.get("input_type") == "recording":
-        report("Finalizing browser recording", 4)
+    # MediaRecorder-generated WebM files can be perfectly decodable while lacking
+    # container-level duration metadata (ffprobe reports `N/A`). This applies both
+    # to recordings captured in this app and webcam recordings uploaded later.
+    # Remux/transcode them before applying the normal duration validation.
+    is_webm = source.suffix.lower() == ".webm"
+    if project.get("input_type") == "recording" or is_webm:
+        report("Finalizing browser recording" if project.get("input_type") == "recording" else "Finalizing WebM video", 4)
         normalized = normalize_recording(source, output_dir / "recording.mp4", ffmpeg, ffprobe)
         engine_project["input_path"] = str(normalized)
     else:
@@ -74,4 +79,3 @@ def process_video(project: dict, report) -> Path:
     if not output.is_file() or output.stat().st_size == 0:
         raise PipelineError("Pipeline produced no output")
     return output
-
