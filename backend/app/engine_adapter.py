@@ -28,10 +28,8 @@ def configure_engine(engine, input_type: str) -> None:
     engine.TTS_CONCURRENCY = int(os.getenv("VIDEO_RECORDING_TTS_CONCURRENCY", "6"))
     engine.AUDIO_FIT_CONCURRENCY = int(os.getenv("VIDEO_RECORDING_AUDIO_FIT_CONCURRENCY", "6"))
     engine.REWRITE_CONCURRENCY = int(os.getenv("VIDEO_RECORDING_REWRITE_CONCURRENCY", "4"))
-    # QA calls improve wording but serialize extra OpenAI round trips. Timing rewrites
-    # remain enabled, so fitted speech still respects every source segment window.
-    engine.TRANSCRIPT_QA_ENABLED = False
-    engine.TRANSLATION_QA_ENABLED = False
+    # Recordings use the same transcript and translation QA stages as uploads.
+    # Fast mode only increases concurrency for the expensive processing stages.
 
 
 @dataclass
